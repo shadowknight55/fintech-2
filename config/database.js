@@ -1,9 +1,6 @@
 // Import the Sequelize module to interact with the MySQL database
-const { Sequelize } = require('sequelize');
-
-// Load environment variables from the .env file for sensitive information
-require('dotenv').config();  // This will read the .env file and make its variables available in process.env
-
+import Sequelize from 'sequelize';
+import "dotenv/config";
 // Create a new Sequelize instance to manage the database connection
 const sequelize = new Sequelize(
   process.env.DB_NAME,     // Database name, sourced from the environment variables (e.g., 'fintech')
@@ -16,14 +13,5 @@ const sequelize = new Sequelize(
   }
 );
 
-// Test the database connection by attempting to authenticate
-sequelize.authenticate()
-  .then(() => {
-    console.log('Database connection successful!'); // If successful, log a success message
-  })
-  .catch((err) => {
-    console.error('Unable to connect to the database:', err); // If there is an error, log the error message
-  });
-
 // Export the sequelize instance so it can be used in other parts of the application (e.g., for defining models)
-module.exports = sequelize;
+export  default sequelize;
