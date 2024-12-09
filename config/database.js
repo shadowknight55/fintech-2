@@ -13,5 +13,5 @@ const sequelize = new Sequelize(
   }
 );
 
-// Export the sequelize instance so it can be used in other parts of the application (e.g., for defining models)
+// Export the sequelize instance so it can be used in other parts of the application 
 export  default sequelize;
