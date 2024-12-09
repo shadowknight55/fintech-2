@@ -1,6 +1,5 @@
 // Import necessary modules
 import sequelize from './config/database.js';  // Import the Sequelize instance to interact with the database
-// import routes from './routes/index.js';  // Import routes (commented out for now)
 import User from './models/user.js';  // Import the 'User' model for interacting with the 'Users' table
 import Transaction from './models/transaction.js';  // Import the 'Transaction' model for interacting with the 'Transactions' table
 
