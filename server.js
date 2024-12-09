@@ -17,10 +17,6 @@ try {
 
   console.log('Database synchronized');  // If the tables were successfully synced, log this message
 
-  // Start the Express server and listen for incoming requests on the specified port
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);  // Log that the server is running, with dynamic port number
-  });
 
 } catch (error) {
   // If there’s any error with the database connection or syncing, log the error
