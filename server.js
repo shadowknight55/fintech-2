@@ -1,10 +1,9 @@
 // Import necessary modules
-// import express from 'express';   // Import Express.js (commented out for now)
 import sequelize from './config/database.js';  // Import the Sequelize instance to interact with the database
 // import routes from './routes/index.js';  // Import routes (commented out for now)
 import User from './models/user.js';  // Import the 'User' model for interacting with the 'Users' table
 import Transaction from './models/transaction.js';  // Import the 'Transaction' model for interacting with the 'Transactions' table
-// import 'dotenv/config';  // Import dotenv to load environment variables (commented out)
+
 
 try {
   // Authenticate the database connection to ensure it's working
