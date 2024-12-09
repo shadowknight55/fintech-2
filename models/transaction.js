@@ -42,22 +42,6 @@ const Transaction = sequelize.define('Transaction', {
   timestamps: true,  // Automatically add 'createdAt' and 'updatedAt' columns to the table
 });
 
-// Sync function to test the database connection and ensure tables are created
-const syncDb = async () => {
-  try {
-    // Test the database connection to ensure it works
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-
-    // Sync the 'Customer' and 'Product' tables (this should be adapted based on your app)
-    await Customer.sync();   // Ensure the 'Customer' table is created
-    await Product.sync();    // Ensure the 'Product' table is created
-    console.log('Customer and Product tables synced successfully.');
-  } catch (error) {
-    // Log any connection or sync errors
-    console.error('Unable to connect to the database:', error);
-  }
-};
 
 // Export the 'Transaction' model so it can be used in other parts of the application
 export default Transaction;
