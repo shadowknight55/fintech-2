@@ -71,10 +71,3 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
     }
   });
   
-
-
-
-
-
-
-
