@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTech - Register</title>
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+    <div class="register-container">
+        <header>
+            <h1>FinTech Registration</h1>
+        </header>
+        <main>
+            <form id="registerForm">
+                <div class="form-group">
+                    <input type="text" id="name" name="name" required>
+                    <label for="name">Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" required>
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Password</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <label for="confirm-password">Confirm Password</label>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div class="back-button">
+                <a href="javascript:history.back()">Go Back</a>
+            </div>
+        </main>
+    </div>
+    <footer>
+        <p>&copy; 2024 FinTech. All rights reserved.</p>
+    </footer>
+    <script src="register.js"></script>
+</body>
+</html>
