@@ -1,6 +1,7 @@
 // Import the Sequelize module to interact with the MySQL database
 import Sequelize from 'sequelize';
-import "dotenv/config";
+import dotenv from'dotenv';
+dotenv.config();
 // Create a new Sequelize instance to manage the database connection
 const sequelize = new Sequelize(
   process.env.DB_NAME,     // Database name, sourced from the environment variables (e.g., 'fintech')
