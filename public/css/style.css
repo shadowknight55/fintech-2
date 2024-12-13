@@ -1,0 +1,111 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    text-align: center; /* Center text */
+}
+
+/* Header Styles */
+header {
+    width: 100%;
+    background-color: #2c6e49;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center; /* Center header content */
+    position: absolute;
+    top: 0;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #64b3b1;
+}
+
+/* Main Section */
+main {
+    text-align: center;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px; /* Maximum width of the main section */
+    margin: 20px;
+    margin-top: 100px; /* Adjust space for header */
+}
+
+/* Main Heading */
+h1 {
+    font-size: 2.5rem;
+    color: #2c6e49;
+    margin-bottom: 1.5rem;
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+button {
+    padding: 1rem 2rem;
+    background-color: #2c6e49;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #64b3b1;
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: #1b4b36;
+    transform: translateY(0);
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #2c6e49;
+    color: white;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}

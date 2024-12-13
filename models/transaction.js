@@ -1,47 +1,34 @@
-// Import necessary modules
 import { DataTypes } from 'sequelize';  // DataTypes is used to define the column types for Sequelize models
 import sequelize from '../config/database.js';  // Import the Sequelize instance from the database configuration
 
-// Define the 'Transaction' model with Sequelize
 const Transaction = sequelize.define('Transaction', {
-  // Define the 'id' column with auto-increment and primary key
   id: {
-    type: DataTypes.INTEGER,    // The column type is INTEGER
-    primaryKey: true,           // This column is the primary key for the table
-    autoIncrement: true,        // Automatically increment the value for each new record
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
-  
-  // Define the 'amount' column for the transaction value
   amount: {
-    type: DataTypes.DECIMAL(10, 2),  // DECIMAL type with a maximum of 10 digits and 2 decimal places
-    allowNull: false,               // This field is required (cannot be null)
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
   },
-  
-  // Define the 'type' column to specify whether the transaction is a 'credit' or 'debit'
   type: {
-    type: DataTypes.ENUM('credit', 'debit'), // Enum type restricting values to 'credit' or 'debit'
-    allowNull: false,                      // This field is required
+    type: DataTypes.ENUM('credit', 'debit'),
+    allowNull: false,
   },
-
-  // Define the 'description' column for optional transaction details
   description: {
-    type: DataTypes.STRING,     // Column type is STRING (text)
-    allowNull: true,            // This field is optional (can be null)
+    type: DataTypes.STRING,
+    allowNull: true,
   },
-
-  // Define the 'user_id' column to associate each transaction with a specific user
   user_id: {
-    type: DataTypes.INTEGER,  // The column type is INTEGER
-    allowNull: false,         // This field is required
+    type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: 'Users',         // The 'user_id' references the 'id' column in the 'Users' table
-      key: 'id',              // 'id' is the primary key in the 'Users' table
+      model: 'Users',
+      key: 'id',
     },
   },
 }, {
-  timestamps: true,  // Automatically add 'createdAt' and 'updatedAt' columns to the table
+  timestamps: true,
 });
 
-
-// Export the 'Transaction' model so it can be used in other parts of the application
 export default Transaction;

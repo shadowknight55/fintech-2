@@ -36,10 +36,16 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(`${type === "error" ? "Error: " : ""}${message}`);
     }
 
+   
     function simulateLogin(email, password) {
         console.log("Logging in with:", { email, password });
-        displayMessage("Login successful! Welcome to FinTech.", "success");
-
-        // TODO: Replace this simulation with real server communication.
+        displayMessage("Login successful! Redirecting to your dashboard...", "success");
+    
+        // Simulate successful login and redirect
+        setTimeout(() => {
+            window.location.href = "/dashboard"; // Replace with your actual dashboard URL
+        }, 1000);
     }
+    
+
 });

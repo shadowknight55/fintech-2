@@ -1,12 +1,10 @@
-// register.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const registerForm = document.getElementById("registerForm");
 
-    registerForm.addEventListener("submit", (event) => {
-        event.preventDefault(); // Prevent the default form submission
+    registerForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission
 
-        // Retrieve form values
+        // Get form values
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
@@ -33,11 +31,27 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Simulated registration success
-        displayMessage("Registration successful! Welcome to FinTech.", "success");
+        try {
+            const data = { username: name, email, password };
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                redirect: 'follow', // Allow redirects to be followed
+            });
 
-        // TODO: Add real registration logic here (e.g., API call)
-        console.log({ name, email, password });
+            if (response.ok) {
+                displayMessage('Sign-up successful! Redirecting to dashboard...', 'success');
+                setTimeout(() => {
+                    window.location.href = "/dashboard"; // Redirect to the dashboard
+                }, 1000);
+            } else {
+                const result = await response.json();
+                displayMessage(result.message || 'An error occurred.', 'error');
+            }
+        } catch (error) {
+            displayMessage('Error connecting to the server.', 'error');
+        }
     });
 
     function validateEmail(email) {

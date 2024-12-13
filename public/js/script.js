@@ -69,5 +69,6 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
       document.getElementById('message').textContent = 'Error connecting to the server.';
       document.getElementById('message').style.color = 'red';
     }
+     
   });
   
