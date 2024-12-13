@@ -63,3 +63,4 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(`${type === "error" ? "Error: " : ""}${message}`);
     }
 });
+

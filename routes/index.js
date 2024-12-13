@@ -22,8 +22,10 @@ router.get('/transactions', async (req, res) => {
 
 router.post('/transactions', async (req, res) => {
   try {
-    const { amount, description, date } = req.body;
-    const transaction = await Transaction.create({ amount, description, date });
+    const { description, amount, type } = req.body;
+    const transaction = await Transaction.create({ description, amount, type });
+
+    // Return the created transaction
     res.status(201).json(transaction);
   } catch (error) {
     console.error('Error creating transaction:', error);
@@ -75,18 +77,17 @@ router.get('/users', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    try {
-      const { username, email, password } = req.body;
-      const user = await User.create({ username, email, password });
-  
-      // Redirect to dashboard after successful registration
-      res.redirect('/dashboard');
-    } catch (error) {
-      console.error('Error creating user:', error);
-      res.status(400).json({ message: 'Error creating user', error: error.message });
-    }
-  });
-  
+  try {
+    const { username, email, password } = req.body;
+    const user = await User.create({ username, email, password });
+
+    // Redirect to dashboard after successful registration
+    res.redirect('/dashboard');
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(400).json({ message: 'Error creating user', error: error.message });
+  }
+});
 
 // Login route
 router.post('/login', async (req, res) => {
@@ -98,7 +99,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    // Here, you should compare the password with the hashed version
+    // Here, you should compare the password with the hashed version (use bcrypt)
     if (user.password !== password) {
       return res.status(401).json({ message: 'Invalid password' });
     }
@@ -109,6 +110,22 @@ router.post('/login', async (req, res) => {
     console.error('Error logging in user:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
+});
+
+// Dashboard route
+router.post('/transactions', async (req, res) => {
+    try {
+        const { description, amount, type } = req.body;
+
+        // Save the transaction to the database
+        const transaction = await Transaction.create({ description, amount, type });
+
+        // Send back the created transaction
+        res.status(201).json(transaction);
+    } catch (error) {
+        console.error('Error creating transaction:', error);
+        res.status(400).json({ message: 'Error creating transaction', error: error.message });
+    }
 });
 
 // Render routes for login, register, and dashboard

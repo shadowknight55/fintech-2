@@ -11,10 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Event listeners for buttons on the main page
-    const registerButton = document.querySelector("a[href='./register/register.html'] button");
-    const loginButton = document.querySelector("a[href='./login/login.html'] button");
-
+ 
     if (registerButton) {
         registerButton.addEventListener("click", () => {
             console.log("Register button clicked");
@@ -71,4 +68,5 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
     }
      
   });
+  
   
