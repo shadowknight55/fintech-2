@@ -1,6 +1,8 @@
 import { DataTypes } from 'sequelize';  // DataTypes is used to define the column types for Sequelize models
 import sequelize from '../config/database.js';  // Import the Sequelize instance from the database configuration
 
+
+
 const Transaction = sequelize.define('Transaction', {
   id: {
     type: DataTypes.INTEGER,
@@ -12,7 +14,7 @@ const Transaction = sequelize.define('Transaction', {
     allowNull: false,
   },
   type: {
-    type: DataTypes.ENUM('credit', 'debit'),
+    type: DataTypes.ENUM('withdraw', 'transaction','deposit'),
     allowNull: false,
   },
   description: {

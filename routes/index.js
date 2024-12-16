@@ -9,10 +9,13 @@ router.get('/', (req, res) => {
   res.render('index', { title: 'Home Page' });
 });
 
-// Transaction routes
+// Transaction routes// Get all transactions
 router.get('/transactions', async (req, res) => {
   try {
-    const transactions = await Transaction.findAll();
+    const userId = req.session.userId; // Assuming user session contains userId
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const transactions = await Transaction.findAll({ where: { user_id: userId } });
     res.render('transactions', { transactions });
   } catch (error) {
     console.error('Error fetching transactions:', error);
@@ -20,10 +23,20 @@ router.get('/transactions', async (req, res) => {
   }
 });
 
+// Create a new transaction
 router.post('/transactions', async (req, res) => {
   try {
-    const { amount, description, date } = req.body;
-    const transaction = await Transaction.create({ amount, description, date });
+    const { description, amount, type } = req.body;
+    const userId = req.session.userId; // Use session to identify the user
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const transaction = await Transaction.create({
+      description,
+      amount,
+      type,
+      user_id: userId,
+    });
+
     res.status(201).json(transaction);
   } catch (error) {
     console.error('Error creating transaction:', error);
@@ -31,26 +44,19 @@ router.post('/transactions', async (req, res) => {
   }
 });
 
-router.delete('/transactions/:id', async (req, res) => {
-  try {
-    const transactionId = req.params.id;
-    const deletedCount = await Transaction.destroy({ where: { id: transactionId } });
-    if (deletedCount === 0) return res.status(404).json({ message: 'Transaction not found' });
-    res.status(204).send();
-  } catch (error) {
-    console.error('Error deleting transaction:', error);
-    res.status(500).json({ message: 'Error deleting transaction', error: error.message });
-  }
-});
-
+// Update a transaction
 router.put('/transactions/:id', async (req, res) => {
   try {
     const transactionId = req.params.id;
-    const { amount, description, date } = req.body;
+    const { description, amount, type } = req.body;
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
     const [updated] = await Transaction.update(
-      { amount, description, date },
-      { where: { id: transactionId } }
+      { description, amount, type },
+      { where: { id: transactionId, user_id: userId } }
     );
+
     if (updated) {
       const updatedTransaction = await Transaction.findByPk(transactionId);
       res.status(200).json(updatedTransaction);
@@ -63,6 +69,24 @@ router.put('/transactions/:id', async (req, res) => {
   }
 });
 
+// Delete a transaction
+router.delete('/transactions/:id', async (req, res) => {
+  try {
+    const transactionId = req.params.id;
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const deletedCount = await Transaction.destroy({ where: { id: transactionId, user_id: userId } });
+
+    if (deletedCount === 0) return res.status(404).json({ message: 'Transaction not found' });
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+    res.status(500).json({ message: 'Error deleting transaction', error: error.message });
+  }
+});
+
+
 // User routes
 router.get('/users', async (req, res) => {
   try {
@@ -73,6 +97,19 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+
+router.get('/dashboard', async (req, res) => {
+  try {
+    const userId = 1; // Replace with session or token logic
+    const transactions = await Transaction.findAll({ where: { user_id: userId } });
+
+    res.render('dashboard', { transactions });
+  } catch (error) {
+    console.error('Error rendering dashboard:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 router.post('/register', async (req, res) => {
     try {
@@ -110,6 +147,9 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+
+
+
 
 // Render routes for login, register, and dashboard
 router.get('/login', (req, res) => {
