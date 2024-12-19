@@ -143,14 +143,14 @@ h1 {
         </div>
 
         <form id="transaction-form" class="transaction-form">
-            <input type="text" id="description" placeholder="Description" required>
-            <input type="number" id="amount" placeholder="Amount" required>
+            <input type="text" id="description" placeholder="Description" >
+            <input type="number" id="amount" placeholder="Amount" >
             <select id="type">
                 <option value="income">Income</option>
                 <option value="expense">Expense</option>
                 <option value="withdraw">Withdraw</option>
             </select>
-            <button type="submit">Add Transaction</button>
+            <button id='submit-btn' type="submit">Add Transaction</button>
         </form>
 
         <h2>Transactions</h2>
@@ -163,15 +163,16 @@ h1 {
         const transactionList = document.getElementById('transaction-list');
         const logoutButton = document.getElementById('logoutButton');
 
-  document.getElementById('transaction-form').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Prevent the default form submission
-
-    const description = document.getElementById('description').value;
-    const amount = document.getElementById('amount').value;
-    const type = document.getElementById('type').value;
+    document.getElementById('submit-btn').addEventListener('click', function(e) {
+         alert();
+        // e.preventDefault(); // Prevent the default form submission
+        console.log("transactionList eventHandler"); 
+        const description = document.getElementById('description').value;
+        const amount = document.getElementById('amount').value;
+        const type = document.getElementById('type').value;
 
     try {
-      const response = await fetch('/transactions', {
+      const response = fetch('/transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -180,11 +181,11 @@ h1 {
       });
 
       if (response.ok) {
-        const transaction = await response.json();
+        const transaction = response.json();
         console.log('Transaction added:', transaction);
         // Optionally, update the UI with the new transaction
       } else {
-        const error = await response.json();
+        const error = response.json();
         console.error('Error:', error.message);
       }
     } catch (error) {
@@ -193,19 +194,20 @@ h1 {
   });
 
 
-        form.addEventListener('submit', addTransaction);
+        // form.addEventListener('submit', addTransaction);
         logoutButton.addEventListener('click', logout);
 
-        function addTransaction(e) {
-            e.preventDefault();
-            const description = document.getElementById('description').value;
+         function addTransaction(e) {
+             e.preventDefault();
+           const description = document.getElementById('description').value;
             const amount = parseFloat(document.getElementById('amount').value);
-            const type = document.getElementById('type').value;
-            const transaction = { description, amount, type };
+             const type = document.getElementById('type').value;
+         const transaction = { description, amount, type };
             transactions.push(transaction);
             updateUI();
-            form.reset();
-        }
+           form.reset();
+
+         }
 
         function updateUI() {
             transactionList.innerHTML = '';

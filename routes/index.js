@@ -6,47 +6,63 @@ const router = express.Router();
 
 // Root route
 router.get('/', (req, res) => {
+  // console.log("SSR UserID", userId);
   res.render('index', { title: 'Home Page' });
 });
 
 // Get all transactions
 router.get('/transactions', async (req, res) => {
-  try {
-      const userId = req.session.userId; // Assuming user session contains userId
-      if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-      const transactions = await Transaction.findAll({ where: { user_id: userId } });
-      res.render('transactions', { transactions });
-  } catch (error) {
-      console.error('Error fetching transactions:', error);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
-  }
+    console.log("Transactions============ ",)
+   try {
+        const userId = req.session.userId; // Assuming user session contains userId
+       //if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+       const transactions = await Transaction.findAll({ where: { user_id: userId } });
+       res.render('transactions', { transactions });
+   } catch (error) {
+       console.error('Error fetching transactions:', error);
+       res.status(500).json({ message: 'Internal server error', error: error.message });
+   }
 });
 // Create a new transaction
 router.post('/transactions', async (req, res) => {
+  console.log("POST:::Transactions");
+  
   try {
-      const { description, amount, type } = req.body;
-      const userId = req.session.userId; // Use session to identify the user
-      if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    //const userId = req.session.userId; // Assuming user session contains userId
+    //if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-      // Log the incoming transaction data
-      console.log('Creating transaction:', { description, amount, type, userId });
+    const { description, amount, type } = req.body;
+    console.log("decode description", description)
+    // Validation checks
+    if (!description || !amount || !type) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
 
-      // Create the transaction in the database
-      const transaction = await Transaction.create({
-          description,
-          amount,
-          type,
-          user_id: userId, // Associate the transaction with the logged-in user
-      });
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ message: 'Amount must be a positive number.' });
+    }
 
-      // Log the created transaction
-      console.log('Transaction created:', transaction);
+    const validTypes = ['withdraw', 'deposit', 'transaction'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({ message: 'Invalid transaction type.' });
+    }
 
-      res.status(201).json(transaction); // Respond with the created transaction
+    // Create the transaction in the database
+    const transaction = await Transaction.create({
+      description,
+      amount,
+      type,
+      user_id: userId, // Associate the transaction with the logged-in user
+    });
+
+    // Log the created transaction
+    console.log('Transaction created:', transaction);
+
+    // Respond with the created transaction
+    res.status(201).json(transaction);
   } catch (error) {
-      console.error('Error creating transaction:', error);
-      res.status(400).json({ message: 'Error creating transaction', error: error.message });
+    console.error('Error creating transaction:', error);
+    res.status(400).json({ message: 'Error creating transaction', error: error.message });
   }
 });
 
@@ -105,6 +121,7 @@ router.get('/users', async (req, res) => {
 });
 
 router.get('/dashboard', async (req, res) => {
+  console.log("SSR UserID ===>>j", req.params);
   try {
     const userId = 1; // Replace with session or token logic
     const transactions = await Transaction.findAll({ where: { user_id: userId } });
@@ -134,26 +151,26 @@ router.post('/register', async (req, res) => {
 // Login route
 router.post('/login', async (req, res) => {
   try {
-      const { email, password } = req.body;
-      const user = await User.findOne({ where: { email } });
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email } });
 
-      if (!user) {
-          return res.status(401).json({ message: 'User  not found' });
-      }
+    if (!user) {
+      return res.status(401).json({ message: 'User  not found' });
+    }
 
-      // Here, you should compare the password with the hashed version
-      if (user.password !== password) {
-          return res.status(401).json({ message: 'Invalid password' });
-      }
+    // Here, you should compare the password with the hashed version
+    if (user.password !== password) {
+      return res.status(401).json({ message: 'Invalid password' });
+    }
 
-      // Set userId in session
-      req.session.userId = user.id; // Store user ID in session
+    // Set userId in session
+    req.session.userId = user.id; // Store user ID in session
 
-      // Redirect to dashboard upon successful login
-      res.redirect('/dashboard');
+    // Redirect to dashboard upon successful login
+    res.redirect('/dashboard');
   } catch (error) {
-      console.error('Error logging in user:', error);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
+    console.error('Error logging in user:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
@@ -161,6 +178,7 @@ router.post('/login', async (req, res) => {
 
 // Render routes for login, register, and dashboard
 router.get('/login', (req, res) => {
+  console.log("login page route"); 
   res.render('login');
 });
 

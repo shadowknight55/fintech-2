@@ -16,7 +16,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true if using HTTPS
-}));
+}));;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data
 
@@ -29,14 +29,14 @@ app.use(express.static('public'));
 // Register routes
 app.use('/', taskRoutes);
 
-// Sync database (Add this to sync your Sequelize models)
-connectDB().then(() => {
-  sequelizeConnection.sync().then(() => {
-    console.log('Database synced');
-  }).catch((error) => {
-    console.error('Error syncing database:', error);
-  });
-});
+ connectDB().then(() => {
+   sequelizeConnection.sync().then(() => {
+     console.log('Database synced');
+   }).catch((error) => {
+ //Sync database (Add this to sync your Sequelize models)
+     console.error('Error syncing database:', error);
+   });
+ });
 
 
 const PORT = process.env.PORT || 3000;
