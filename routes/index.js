@@ -23,91 +23,61 @@ router.get('/transactions', async (req, res) => {
        res.status(500).json({ message: 'Internal server error', error: error.message });
    }
 });
-// Create a new transaction
+
+const widthDrawalType =  {
+  WITHDRAW: 'withdraw', 
+  TRANSACTION: 'transaction',
+  DEPOSIT: 'deposit',
+}
 router.post('/transactions', async (req, res) => {
-  console.log("POST:::Transactions");
-  
+
+const user_id = req.session.userId; // Assuming user session contains userId
+  const { amount, type, description} = req.body;
+  console.log("POST:::Transactions", req.body);
+console.log("Original NUMBER:::", typeof(amount), "PARSED NUMER:::", typeof(parseInt (amount)))
+  const transaction = await Transaction.create({ 
+    description: description,
+    user_id : user_id,
+    amount : amount,
+    type: widthDrawalType.WITHDRAW,
+  });
+
+
+})
+// Create a transaction
+router.post('/', async (req, res) => {
+  const { amount, type } = req.body;
+  const userId = req.user.userId;
+
   try {
-    //const userId = req.session.userId; // Assuming user session contains userId
-    //if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-    const { description, amount, type } = req.body;
-    console.log("decode description", description)
-    // Validation checks
-    if (!description || !amount || !type) {
-      return res.status(400).json({ message: 'All fields are required.' });
+    if (!amount || amount <= 0 || !type || !['deposit', 'withdraw', 'expense'].includes(type)) {
+      return res.status(400).json({ error: 'Invalid transaction type or amount.' });
     }
 
-    if (isNaN(amount) || amount <= 0) {
-      return res.status(400).json({ message: 'Amount must be a positive number.' });
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
     }
 
-    const validTypes = ['withdraw', 'deposit', 'transaction'];
-    if (!validTypes.includes(type)) {
-      return res.status(400).json({ message: 'Invalid transaction type.' });
+    if ((type === 'withdraw' || type === 'expense') && user.balance < amount) {
+      return res.status(400).json({ error: 'Insufficient balance.' });
     }
 
-    // Create the transaction in the database
-    const transaction = await Transaction.create({
-      description,
-      amount,
-      type,
-      user_id: userId, // Associate the transaction with the logged-in user
-    });
+    if (type === 'withdraw' || type === 'expense') {
+      user.balance -= amount;
+    } else if (type === 'deposit') {
+      user.balance += amount;
+    }
 
-    // Log the created transaction
-    console.log('Transaction created:', transaction);
+    const transaction = await Transaction.create({ amount, type, userId });
+    await user.save();
 
-    // Respond with the created transaction
     res.status(201).json(transaction);
   } catch (error) {
     console.error('Error creating transaction:', error);
-    res.status(400).json({ message: 'Error creating transaction', error: error.message });
+    res.status(500).json({ error: 'Internal server error.' });
   }
 });
-
-// Update a transaction
-router.put('/transactions/:id', async (req, res) => {
-  try {
-    const transactionId = req.params.id;
-    const { description, amount, type } = req.body;
-    const userId = req.session.userId;
-    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-    const [updated] = await Transaction.update(
-      { description, amount, type },
-      { where: { id: transactionId, user_id: userId } }
-    );
-
-    if (updated) {
-      const updatedTransaction = await Transaction.findByPk(transactionId);
-      res.status(200).json(updatedTransaction);
-    } else {
-      res.status(404).json({ message: 'Transaction not found' });
-    }
-  } catch (error) {
-    console.error('Error updating transaction:', error);
-    res.status(400).json({ message: 'Error updating transaction', error: error.message });
-  }
-});
-
-// Delete a transaction
-router.delete('/transactions/:id', async (req, res) => {
-  try {
-    const transactionId = req.params.id;
-    const userId = req.session.userId;
-    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-    const deletedCount = await Transaction.destroy({ where: { id: transactionId, user_id: userId } });
-
-    if (deletedCount === 0) return res.status(404).json({ message: 'Transaction not found' });
-    res.status(204).send();
-  } catch (error) {
-    console.error('Error deleting transaction:', error);
-    res.status(500).json({ message: 'Error deleting transaction', error: error.message });
-  }
-});
-
 
 // User routes
 router.get('/users', async (req, res) => {
@@ -134,44 +104,49 @@ router.get('/dashboard', async (req, res) => {
 });
 
 
+// User registration route
+// User registration route
 router.post('/register', async (req, res) => {
-    try {
-      const { username, email, password } = req.body;
-      const user = await User.create({ username, email, password });
-  
+  const { username, email, password } = req.body;
+  try {
+      // Create a new user without hashing the password
+      const user = await User.create({ username, email, password }); // Store password as plain text
+
+      // Optionally, you can set the user_id in the session or return it
+      req.session.userId = user.id; // Store user ID in session
+
       // Redirect to dashboard after successful registration
       res.redirect('/dashboard');
-    } catch (error) {
+  } catch (error) {
       console.error('Error creating user:', error);
       res.status(400).json({ message: 'Error creating user', error: error.message });
-    }
-  });
-  
+  }
+});
 
 // Login route
-router.post('/login', async (req, res) => {
-  try {
+// Login route
+router.post('/logon', async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ where: { email } });
+    try {
+        // Find the user by email
+        const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return res.status(401).json({ message: 'User  not found' });
+        if (!user) {
+            return res.status(401).json({ message: 'User  not found' });
+        }
+
+        // Compare the password (since we are storing it as plain text)
+        if (user.password !== password) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
+        // Store user ID in session
+        req.session.userId = user.id; // Store user ID in session
+        res.status(200).json({ message: 'Login successful' });
+    } catch (error) {
+        console.error('Error logging in user:', error); // Log the error
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-
-    // Here, you should compare the password with the hashed version
-    if (user.password !== password) {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-
-    // Set userId in session
-    req.session.userId = user.id; // Store user ID in session
-
-    // Redirect to dashboard upon successful login
-    res.redirect('/dashboard');
-  } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
-  }
 });
 
 
@@ -180,6 +155,7 @@ router.post('/login', async (req, res) => {
 router.get('/login', (req, res) => {
   console.log("login page route"); 
   res.render('login');
+  
 });
 
 router.get('/register', (req, res) => {

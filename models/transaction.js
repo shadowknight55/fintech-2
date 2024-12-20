@@ -12,7 +12,7 @@ const Transaction = sequelize.define('Transaction', {
         allowNull: false,
     },
     type: {
-        type: DataTypes.ENUM('withdraw', 'transaction', 'deposit'),
+        type: DataTypes.ENUM ('withdraw', 'transaction', 'deposit'),
         allowNull: false,
     },
     description: {
@@ -24,7 +24,7 @@ const Transaction = sequelize.define('Transaction', {
         allowNull: false,
         references: {
             model: 'Users', // Ensure this matches your User model name
-            key: 'id',
+            key: 'user_id',
         },
     },
 }, {
