@@ -42,6 +42,32 @@ console.log("Original NUMBER:::", typeof(amount), "PARSED NUMER:::", typeof(pars
     type: widthDrawalType.WITHDRAW,
   });
 
+// New route to handle transaction submission
+router.post('/transactions', async (req, res) => {
+    const { description, amount, type } = req.body;
+
+    try {
+        // Create a new transaction
+        const transaction = await Transaction.create({
+            description,
+            amount,
+            type,
+            user_id: req.session.userId // Assuming you have user session management
+        });
+
+        // Redirect to the transactions page with the new transaction
+        res.redirect(`/transactions?description=${encodeURIComponent(description)}&amount=${amount}&type=${type}`);
+    } catch (error) {
+        console.error('Error creating transaction:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Route to display transactions
+router.get('/transactions', async (req, res) => {
+    const transactions = await Transaction.findAll({ where: { user_id: req.session.userId } });
+    res.render('transactions', { transactions });
+});
 
 })
 // Create a transaction
@@ -112,7 +138,7 @@ router.post('/register', async (req, res) => {
       // Create a new user without hashing the password
       const user = await User.create({ username, email, password }); // Store password as plain text
 
-      // Optionally, you can set the user_id in the session or return it
+      // Optionally, yPou can set the user_id in the session or return it
       req.session.userId = user.id; // Store user ID in session
 
       // Redirect to dashboard after successful registration
