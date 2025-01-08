@@ -43,47 +43,54 @@
     <script>
         let transactions = [];
         const transactionList = document.getElementById('transaction-list');
+        const transactionForm = document.getElementById('transaction-form');
 
-        // Handle form submission
-        document.getElementById('transaction-form').addEventListener('submit', async function (e) {
-            e.preventDefault(); // Prevent the default form submission
-            
-            const description = document.getElementById('description').value.trim();
-            const amount = parseFloat(document.getElementById('amount').value);
-            const type = document.getElementById('type').value;
+        if (transactionForm) {
+            // Handle form submission
+            transactionForm.addEventListener('submit', async function (e) {
+                e.preventDefault(); // Prevent the default form submission
 
-            if (!description || isNaN(amount) || amount <= 0) {
-                alert("Please provide a valid description and amount.");
-                return;
-            }
+                const description = document.getElementById('description').value.trim();
+                const amount = parseFloat(document.getElementById('amount').value);
+                const type = document.getElementById('type').value;
 
-            // Create the transaction object
-            const transaction = { description, amount, type };
+                console.log('Transaction Type:', type)
 
-            try {
-                // Send the transaction data to the server
-                const response = await fetch('/transactions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(transaction),
-                });
-
-                if (response.ok) {
-                    // If the response is successful, add the transaction to the UI
-                    const newTransaction = await response.json(); // Get the created transaction from the response
-                    transactions.push(newTransaction); // Add the transaction to the array
-                    updateUI(); // Update the UI
-                    document.getElementById('transaction-form').reset(); // Reset the form fields
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.message || "Error saving transaction");
+                if (!description || isNaN(amount) || amount <= 0) {
+                    alert("Please provide a valid description and amount.");
+                    return;
                 }
-            } catch (error) {
-                console.error('Error submitting transaction:', error);
-            }
-        });
+
+                // Create the transaction object
+                const transaction = { description, amount, type };
+
+                try {
+                    // Send the transaction data to the server
+                    const response = await fetch('/transactions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(transaction),
+                    });
+
+                    if (response.ok) {
+                        // If the response is successful, add the transaction to the UI
+                        const newTransaction = await response.json(); // Get the created transaction from the response
+                        console.log('New Transaction:', newTransaction); // Debugging: Log the new transaction
+                        transactions.push(newTransaction); // Add the transaction to the array
+
+                        updateUI(); // Update the UI
+                        transactionForm.reset(); // Reset the form fields
+                    } else {
+                        const errorData = await response.json();
+                        alert(errorData.message || "Error saving transaction");
+                    }
+                } catch (error) {
+                    console.error('Error submitting transaction:', error);
+                }
+            });
+        }
 
         function updateUI() {
             transactionList.innerHTML = ''; // Clear the current transaction list
@@ -123,8 +130,6 @@
         function capitalize(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
-
-        
     </script>
 </body>
 </html>
