@@ -29,6 +29,18 @@ const User = sequelize.define('User', {
   timestamps: true,
 });
 
-// No password hashing or comparison methods
+// Hook for hashing the password before saving a new user
+User.beforeCreate(async (user) => {
+  // Generate a salt for hashing
+  const salt = await bcrypt.genSalt(10);
+  // Hash the user's password with the generated salt
+  user.password = await bcrypt.hash(user.password, salt);
+});
+
+// Instance method for validating the password
+User.prototype.checkPassword = async function (password) {
+  // Compare the provided password with the hashed password stored in the database
+  return bcrypt.compare(password, this.password);
+};
 
 export default User;
