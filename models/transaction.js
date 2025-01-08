@@ -1,34 +1,24 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
+// Define the Transaction model using sequelize
 const Transaction = sequelize.define('Transaction', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
     amount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+      type: DataTypes.FLOAT, // Define the type of the amount attribute as a floating-point number
+      allowNull: false, // Ensure that the amount cannot be null
+      validate: {
+        min: 0.01, // Validate that the transaction amount is at least 0.01 (positive)
+      },
     },
     type: {
-        type: DataTypes.ENUM ('withdraw', 'transaction', 'deposit'),
-        allowNull: false,
+      type: DataTypes.ENUM('deposit', 'withdraw', 'expense'), // Define the type attribute as an ENUM with specific values
+      allowNull: false, // Ensure that the type cannot be null
     },
     description: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Users', // Ensure this matches your User model name
-            key: 'user_id',
-        },
-    },
-}, {
-    timestamps: true,
-});
-
-export default Transaction;
+  });
+  
+  // Export the Transaction model for use in other parts of the application
+  export default Transaction;
