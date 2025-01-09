@@ -9,27 +9,26 @@
 <body>
     <div class="container">
         <h1>Expense Tracker</h1>
-
         <div class="balance-section">
             <div>  
                 <h2>Balance: $<span id="balance">0</span></h2>
                 <h3>Income: $<span id="income">0</span></h3>
                 <h3>Expenses: $<span id="expenses">0</span></h3>
             </div>
-            <button class="logout-button" id="logoutButton">Log Out</button>
+            <a href="/user/logout" class="logout-button" id="logoutButton">Logout</a>
         </div>
 
-        <form id="transaction-form" class="transaction-form">
-            <textarea id="description" placeholder="Description" required></textarea>
-            <input type="number" id="amount" placeholder="Amount" required>
-            <select id="type">
+        <form id="transaction-form" class="transaction-form" action="/transactions" method="POST">
+            <textarea id="description" name="description" placeholder="Description" required></textarea>
+            <input type="number" id="amount" name="amount" placeholder="Amount" required>
+            <select id="type" name="type">
                 <option value="income">Income</option>
                 <option value="expense">Expense</option>
                 <option value="withdraw">Withdraw</option>
             </select>
             <button id="submit-btn" type="submit">Add Transaction</button>
         </form>
-
+        
         <div class="transaction-box">
             <h2>Transactions</h2>
             <div id="transaction-list" class="transaction-list"></div>
@@ -40,96 +39,6 @@
         © 2024 Expense Tracker
     </footer>
 
-    <script>
-        let transactions = [];
-        const transactionList = document.getElementById('transaction-list');
-        const transactionForm = document.getElementById('transaction-form');
-
-        if (transactionForm) {
-            // Handle form submission
-            transactionForm.addEventListener('submit', async function (e) {
-                e.preventDefault(); // Prevent the default form submission
-
-                const description = document.getElementById('description').value.trim();
-                const amount = parseFloat(document.getElementById('amount').value);
-                const type = document.getElementById('type').value;
-
-                console.log('Transaction Type:', type)
-
-                if (!description || isNaN(amount) || amount <= 0) {
-                    alert("Please provide a valid description and amount.");
-                    return;
-                }
-
-                // Create the transaction object
-                const transaction = { description, amount, type };
-
-                try {
-                    // Send the transaction data to the server
-                    const response = await fetch('/transactions', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(transaction),
-                    });
-
-                    if (response.ok) {
-                        // If the response is successful, add the transaction to the UI
-                        const newTransaction = await response.json(); // Get the created transaction from the response
-                        console.log('New Transaction:', newTransaction); // Debugging: Log the new transaction
-                        transactions.push(newTransaction); // Add the transaction to the array
-
-                        updateUI(); // Update the UI
-                        transactionForm.reset(); // Reset the form fields
-                    } else {
-                        const errorData = await response.json();
-                        alert(errorData.message || "Error saving transaction");
-                    }
-                } catch (error) {
-                    console.error('Error submitting transaction:', error);
-                }
-            });
-        }
-
-        function updateUI() {
-            transactionList.innerHTML = ''; // Clear the current transaction list
-            let balance = 0,
-                income = 0,
-                expenses = 0;
-
-            transactions.forEach(transaction => {
-                const div = document.createElement('div'); // Create a new div for the transaction
-                div.classList.add('transaction-item', transaction.type);
-
-                // Set the inner HTML for the transaction
-                div.innerHTML = `
-                    <span class="type">${capitalize(transaction.type)}</span>
-                    <span class="description">${transaction.description}</span>
-                    <span class="amount">$${transaction.amount.toFixed(2)}</span>
-                `;
-
-                transactionList.appendChild(div); // Add the transaction to the UI
-
-                // Calculate the totals
-                if (transaction.type === 'income') {
-                    income += transaction.amount;
-                    balance += transaction.amount;
-                } else if (transaction.type === 'expense' || transaction.type === 'withdraw') {
-                    expenses += transaction.amount;
-                    balance -= transaction.amount;
-                }
-            });
-
-            // Update the balance, income, and expenses in the UI
-            document.getElementById('balance').textContent = balance.toFixed(2);
-            document.getElementById('income').textContent = income.toFixed(2);
-            document.getElementById('expenses').textContent = expenses.toFixed(2);
-        }
-
-        function capitalize(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-    </script>
+    
 </body>
 </html>
