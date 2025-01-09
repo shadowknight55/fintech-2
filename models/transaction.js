@@ -11,12 +11,16 @@ const Transaction = sequelize.define('Transaction', {
       },
     },
     type: {
-      type: DataTypes.ENUM('deposit', 'withdraw', 'expense'), // Define the type attribute as an ENUM with specific values
+      type: DataTypes.ENUM('income', 'withdraw', 'expense'), // Define the type attribute as an ENUM with specific values
       allowNull: false, // Ensure that the type cannot be null
     },
     description: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false, // Ensure a transaction always belongs to a user
     },
   });
   

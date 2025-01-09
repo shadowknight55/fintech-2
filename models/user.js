@@ -26,6 +26,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  balance: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0, // Default balance
+  },
 }, {
   timestamps: true,
 });
