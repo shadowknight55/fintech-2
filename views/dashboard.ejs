@@ -11,13 +11,13 @@
         <h1>Expense Tracker</h1>
         <div class="balance-section">
             <div>  
-                <h2>Balance: $<span id="balance">0</span></h2>
-                <h3>Income: $<span id="income">0</span></h3>
-                <h3>Expenses: $<span id="expenses">0</span></h3>
+                <h2>Balance: $<span id="balance"><%= balance %></span></h2>
+                <h3>Income: $<span id="income"><%= income %></span></h3>
+                <h3>Expenses: $<span id="expenses"><%= expenses %></span></h3>
             </div>
             <a href="/user/logout" class="logout-button" id="logoutButton">Logout</a>
         </div>
-
+        
         <form id="transaction-form" class="transaction-form" action="/transactions" method="POST">
             <textarea id="description" name="description" placeholder="Description" required></textarea>
             <input type="number" id="amount" name="amount" placeholder="Amount" required>
@@ -32,12 +32,19 @@
         <div class="transaction-box">
             <h2>Transactions</h2>
             <div id="transaction-list" class="transaction-list"></div>
-        </div>
+            <% transactions.forEach(transaction => { %>
+                <p>Description: <%= transaction.description %></p>
+                <p>Amount: $<%= transaction.amount %></p>
+                <p>Type: <%= transaction.type %></p>
+                <% }); %>
+            </div>  
     </div>
 
     <footer>
         © 2024 Expense Tracker
     </footer>
+
+    <script src="js/dashboard.js"></script>
 
     
 </body>
