@@ -26,7 +26,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Serve static files
-app.use(express.static('public'));
+app.use(express.static('public/'));
 
 // Render views for basic navigation
 app.get('/', (req, res) => res.render('index'));
@@ -35,19 +35,31 @@ app.get('/login', (req, res) => res.render('login'));
 app.get('/dashboard', authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId, {
-      include: { model: Transaction, as: 'transactions', order: [['createdAt', 'DESC']] },
+      include: { model: Transaction, as: 'transactions' },
     });
 
     if (!user) {
       return res.status(404).send('User not found.');
     }
 
-    res.render('dashboard', { user });
+    const transactions = user.transactions;
+
+    // Calculate income, expenses, and balance
+    const income = transactions
+      .filter((t) => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expenses = transactions
+      .filter((t) => t.type === 'expense' || t.type === 'withdraw')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const balance = user.balance;
+
+    res.render('dashboard', { balance, income, expenses, transactions });
   } catch (error) {
     console.error('Error loading dashboard:', error);
     res.status(500).send('Internal server error.');
   }
 });
+
 
 
 // Routes
