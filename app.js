@@ -26,12 +26,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Serve static files
-app.use(express.static('public/'));
+app.use(express.static('public'));
 
 // Render views for basic navigation
 app.get('/', (req, res) => res.render('index'));
 app.get('/register', (req, res) => res.render('register'));
 app.get('/login', (req, res) => res.render('login'));
+
+//Render dashboard with authentication
 app.get('/dashboard', authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId, {
@@ -42,6 +44,7 @@ app.get('/dashboard', authenticateToken, async (req, res) => {
       return res.status(404).send('User not found.');
     }
 
+    //Render transactions of user
     const transactions = user.transactions;
 
     // Calculate income, expenses, and balance
@@ -59,8 +62,6 @@ app.get('/dashboard', authenticateToken, async (req, res) => {
     res.status(500).send('Internal server error.');
   }
 });
-
-
 
 // Routes
 app.use('/user', userRoutes); // Mount authentication routes
