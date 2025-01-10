@@ -34,7 +34,7 @@ router.post('/', authenticateToken, async (req, res) => {
     // Update the user's balance
     user.balance = currentBalance;
     // Create a new transaction record
-    const transaction = await Transaction.create({ amount, type, userId });
+    const transaction = await Transaction.create({ amount, type, userId, description });
     // Save the updated user balance to the database
     await user.save(); // Save the updated balance
 
