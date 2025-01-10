@@ -1,5 +1,5 @@
 import User from './user.js';
-import transaction from './transaction.js';
+import Transaction from './transaction.js';
 
 // Define a one-to-many relationship where a User can have multiple Transactions
 User.hasMany(Transaction, { 

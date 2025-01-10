@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
+import bcrypt from 'bcrypt';
 
 // Define the 'User' model with Sequelize
 const User = sequelize.define('User', {
@@ -24,6 +25,11 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  balance: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0, // Default balance
   },
 }, {
   timestamps: true,
